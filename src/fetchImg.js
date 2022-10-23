@@ -1,5 +1,4 @@
 import axios from "axios";
-import Notiflix from "notiflix";
 
 
 const base_url = 'https://pixabay.com/api/';
@@ -27,62 +26,34 @@ export default class FetchImg {
             page: this.page,
             per_page: 40,
         });
-    try {
-      const response = await axios.get(`${base_url}?${params}`);
-      const { data } = response;
-      this.currentHits += data.hits.length;
-      if (data.total === 0) {
-        Notiflix.Notify.failure(
-          'Sorry, there are no images matching your search query. Please try again.'
-        );
-        return;
-        } else if (this.currentHits >= data.totalHits) {
-        Notiflix.Notify.warning(
-          "We're sorry, but you've reached the end of search results."
-        );
-        } else if (this.page === 1 && data.totalHits) {
-        Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
-        };
-
-      this.page += 1;
-      return data.hits;
-    }
         
-    catch {
-      error => console.log(error);
-    }
+        const response = await axios.get(`${base_url}?${params}`);
+        const { data } = response;
         
-    };
-  resetPage() {
-    this.page = 1;
+        this.currentHits += data.hits.length;
+        this.page += 1;
+
+        return data;
+    }
+
+    incrementPage() {
+        this.page += 1;
     };
 
-  resetCurrentHits() {
-    this.currentHits = 0;
+    resetPage() {
+        this.page = 1;
     };
 
-  get inputTitle() {
-    return this.searchImg;
+    resetCurrentHits() {
+        this.currentHits = 0;
     };
 
-  set inputTitle(newTitle) {
-    this.searchImg = newTitle;
+    get inputTitle() {
+        return this.searchImg;
+    };
+
+    set inputTitle(newTitle) {
+        this.searchImg = newTitle;
     };
 
 }
-
-//бесконечный скролл
-
-// const infScroll = new InfiniteScroll('.gallery', {
-//   responseType: 'text',
-//   history: false,
-//   path() {
-//     return `${base_url}?${params}`;
-//   },
-// });
-
-// infScroll.loadNextPage();
-
-// infScroll.on('load', (response, path) => {
-//     console.log(JSON.parse(response));
-// });
